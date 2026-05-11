@@ -1,110 +1,69 @@
-# Response Streaming
+# Multi-Turn Conversations
 
-> In a standard chat setup, your server sends a user message to Claude and waits for the complete response before sending anything back to the client. This creates an awkward delay where users have no feedback that anything is happening.
-
-> A chat app will feel slow because users wait 20 seconds staring at a loading spinner, then all the generated text appears at once, fix this by enabling response streaming
-
-
-- Responses can take 10-30 seconds to generate, leaving users staring at a loading spinner, this is a significant user experience challenge
-- The solution is response streaming, which lets users see text appear chunk by chunk as Claude generates it, creating a much more responsive feel.
-
-## How Streaming Works
-
-- Claude immediately sends back an initial response indicating it has received your request
-- This initial response does not contain text content, it is just a sign to the server that Claude has received the initial request an that Claude is about to start generating some text
-- Then you receive a series of events, each containing a small piece of the overall response.
-- The number of events depends on how much text is being generated
-- Each event will contain a little bit of the overall text(not just one word) that is being generated
-	- How much text is sent depends on how long it takes Claude to generate each little bit of text
-
-
-![](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2Fa46l9irobhg0f5webscixp0bs%2Fpublic%2F1748623338%2F03_-_009_-_Response_Streaming_03.1748623338384.png)
-
-- Your server can forward these text chunks from each event to your client application as they arrive, allowing users to see the response building up word by word. 
-- All of these events are part of a single request to Claude.
+> You ask Claude "What is pizza?" and it answers. Then you ask "What toppings are popular?" but Claude doesn't understand what you're referring to, it doesn't remember previous messages, fix this by creating multi-turn conversations
 
 ---
 
+## Crucial Concept
 
-## Understanding Stream Events
+> Claude doesn't store any of your conversation history. 
 
-Enable streaming
+> Each request you make is completely independent, with no memory of previous exchanges.
+
+> You can have a multi-turn conversation where Claude remembers context from earlier messages. You do this by handling the conversation state/context yourself and you need two things to do that
+
+- Manually maintain a list of all messages in your code
+- Send the complete message history with every request
+
+### Here's the flow that actually works:
+
+1. Send your initial user message to Claude
+2. Take Claude's response and add it to your message list as an assistant message
+3. Add your follow-up question as another user message
+4. Send the entire conversation history to Claude
+
+---
+## Conversation Management
+
+> To make conversation management easier, you can create three helper functions, then use them to maintain a conversation history
+
 ```python
-stream = client.messages.create(
-    model=model,
-    max_tokens=1000,
-    messages=messages,
-    stream=True 
-)
-```
+def add_user_message(messages, text):
+    user_message = {"role": "user", "content": text}
+    messages.append(user_message)
 
-- Claude sends back several types of events:
+def add_assistant_message(messages, text):
+    assistant_message = {"role": "assistant", "content": text}
+    messages.append(assistant_message)
 
-- **MessageStart** : A new message is being sent
-- **ContentBlockStart** : Start of a new block containing text, tool use, or other content
-- **ContentBlockDelta** : Chunks of the actual generated text
-- **ContentBlockStop** : The current content block has been completed
-- **MessageDelta** : The current message is complete
-- **MessageStop** : End of information about the current message
+def chat(messages):
+    message = client.messages.create(
+        model=model,
+        max_tokens=1000,
+        messages=messages,
+    )
+    return message.content[0].text
 
-> The `ContentBlockDelta` events contain the actual generated text that you'll want to display to users.
-
-
----
-
-## Basic Streaming Implementation
-
-To enable streaming, add `stream=True` to your messages.create call:
-
-```
+# Start with an empty message list
 messages = []
-add_user_message(messages, "Write a 1 sentence description of a fake database")
 
-stream = client.messages.create(
-    model=model,
-    max_tokens=1000,
-    messages=messages,
-    stream=True
-)
+# Add the initial user question
+add_user_message(messages, "Define quantum computing in one sentence")
 
-for event in stream:
-    print(event)
-```
+# Get Claude's response
+answer = chat(messages)
 
+# Add Claude's response to the conversation history
+add_assistant_message(messages, answer)
 
-## Simplified Text Streaming
+# Add a follow-up question
+add_user_message(messages, "Write another sentence")
 
-Rather than manually parsing events, you can use the SDK's simplified streaming interface that extracts just the text content:
+# Get the follow-up response with full context
+final_answer = chat(messages)
 
 ```
-with client.messages.stream(
-    model=model,
-    max_tokens=1000,
-    messages=messages
-) as stream:
-    for text in stream.text_stream:
-        print(text, end="")
-```
 
-This approach automatically filters out everything except the actual text content, which is usually what you need for displaying responses to users.
+> Claude will understand that "Write another sentence" refers to expanding on the quantum computing definition, because you've provided the complete conversation context.
 
-## Getting the Complete Message
-
-While streaming individual chunks is great for user experience, you often need the complete message for storage or further processing. After streaming completes, you can get the assembled final message:
-
-```
-with client.messages.stream(
-    model=model,
-    max_tokens=1000,
-    messages=messages
-) as stream:
-    for text in stream.text_stream:
-        # Send each chunk to your client
-        pass
-    
-    # Get the complete message for database storage
-    final_message = stream.get_final_message()
-```
-
-This gives you the best of both worlds: real-time streaming for users and a complete message object for your application logic.
-
+> These helper functions will be useful throughout your work with Claude, making it much easier to build applications that can maintain meaningful conversations over multiple exchanges.
