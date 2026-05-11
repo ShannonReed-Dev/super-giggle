@@ -46,14 +46,14 @@ messages = []
 
 # print(res)
 
-#===========================================================
+# #===========================================================
 
 
-# To generate structured data like JSON, Python code, or 
-# bulleted lists, you'll often run into a common problem: 
-    # Claude wants to be helpful and add explanatory text 
-    # around your content, but sometimes you need just 
-    # the raw data with nothing else.
+# # To generate structured data like JSON, Python code, or 
+# # bulleted lists, you'll often run into a common problem: 
+#     # Claude wants to be helpful and add explanatory text 
+#     # around your content, but sometimes you need just 
+#     # the raw data with nothing else.
 
 
 
@@ -66,7 +66,7 @@ messages = []
 # # entire response, they have to manually select 
 # # just the JSON portion
 # print(res)
-#===========================================================
+# #===========================================================
 
 
 #===========================================================
@@ -90,3 +90,4 @@ print(res)
 
 
 #===========================================================
+

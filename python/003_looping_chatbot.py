@@ -4,6 +4,12 @@ from anthropic import Anthropic
 
 #================================================
 # Looping Chatbot
+# 1. Prompt the user to enter some input
+# 2. Add the user input to the list of messages
+# 3. Call the API
+# 4. Add generated text to the list of messages
+# 5. Print the generated text
+# 6. Repeat
 #================================================
 
 load_dotenv()
@@ -36,19 +42,20 @@ def chat(messages):
 messages = [] # message list
 
 # Use a `while True` loop to run chatbot forever
-while True:
-    # Get user input
+while True:# 6. Repeat
+    # 1. Prompt the user to enter some input
     user_input = input ("> ")
     print("> ", user_input)
 
-    # Add user input to list of messages
+    # 2. Add the user input to the list of messages
     add_user_message(messages, user_input)
 
-    # Get Claude's response by calling claude withthe chat function
+    # 3. Call the API
     answer = chat(messages)
 
-    # Add Claude's response to the list of meassages
+    # 4. Add generated text to the list of messages
     add_assistant_message(messages, answer)
 
+    # 5. Print the generated text
     print("--------")
     print(answer)
