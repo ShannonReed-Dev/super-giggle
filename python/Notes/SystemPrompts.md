@@ -1,22 +1,69 @@
 # System Prompts
+> System prompts are a powerful way to customize how Claude responds to user input. They are essential for creating AI applications that behave consistently and appropriately for their intended purpose. They transform generic AI responses into specialized, role-appropriate interactions.
 
-> When you want responses in a certain format use system prompts explaining the role and what you want it to do
-
-> System prompts are a powerful way to customize how Claude responds to user input. Instead of getting generic answers, you can shape Claude's tone, style, and approach to match your specific use case.
-
-
-### What a system prompt is
-
-> A system prompt is a separate instruction channel that tells Claude _who it is_ and _how it should behave_ before any user message arrives.
-
+- A system prompt is a separate instruction channel that tells Claude **who it is** and **how it should behave** before any user message arrives.
+  - System prompts provide Claude guidance on how to respond
+  - Claude will try to respond in the same way someone in the specified role would respond
+  - Helps keep Claude on task
+- Instead of getting generic answers, you can shape Claude's tone, style, and approach to match your specific use case
 - Influences how Claude responds throughout the conversation, like setting Claude's personality and expertise for the entire interaction.
+- It is delivered through a dedicated top-level parameter on the request, not inside the `messages` array.
+- This separation is intentional: user turns describe **the task**, the system prompt describes **the operator**.
 
-> It is delivered through a dedicated top-level parameter on the request, not inside the `messages` array.
+---
+## Defining System Prompts
+> Defined them as plain strings and pass them into the create function call.
 
-- This separation is intentional: user turns describe _the task_, the system prompt describes _the operator_.
+```python
+system_prompt = """
+You are a patient math tutor.
+Do not directly answer a student's questions.
+Guide them to a solution step by step.
+"""
+
+client.messages.create(
+    model=model,
+    messages=messages,
+    max_tokens=1000,
+    system=system_prompt
+)
+
+```
+
+### Flexible Chat Function
+> Rather than hard-coding system prompts, you can make your chat function more reusable by accepting system prompts as parameters
+- **IMPORTANT DETAIL** :Claude's API doesn't accept `system=None`, so you need to conditionally include the system parameter only when it's provided
+- Then you can call your chat function with or without a system prompt
+
+```python
+def chat(messages, system=None):
+    params = {
+        "model": model,
+        "max_tokens": 1000,
+        "messages": messages,
+    }
+    
+    if system:
+        params["system"] = system
+    
+    message = client.messages.create(**params)
+    return message.content[0].text
+
+# Without system prompt
+answer = chat(messages)
+
+# With system prompt
+system = """
+You are a patient math tutor.
+Do not directly answer a student's questions.
+Guide them to a solution step by step.
+"""
+answer = chat(messages, system=system)
+
+```
 
 
-#### Why it matters
+## Why it matters
 
 |Benefit|What it gives you|
 |---|---|
@@ -26,28 +73,23 @@
 |Token efficiency|Instructions live once at the top instead of being repeated in every user message|
 |Cacheability|Pairs cleanly with prompt caching, since the system block is stable across turns|
 
-> Role prompting is the most powerful way to use system prompts with Claude, and can deliver enhanced accuracy in complex scenarios like legal analysis or financial modeling, tailored tone, and improved focus by keeping Claude within the bounds of the task's specific requirements. 
+- Role prompting is the most powerful way to use system prompts with Claude
+  - can deliver enhanced accuracy in complex scenarios like legal analysis or financial modeling, tailored tone, and improved focus by keeping Claude within the bounds of the task's specific requirements
 
 
-#### What goes in vs what stays out
-
-**Belongs in the system prompt:**
-
+## What Belongs in the system prompt
 - Role and identity ("You are a senior frontend engineer reviewing React code")
 - Domain expertise and audience
 - Tone, voice, output format rules
 - Persistent constraints and refusals
 - Tool usage policy (when tools are configured)
 
-**Belongs in the user turn:**
-
+## What Belongs in the user turn
 - The actual task or question
 - Dynamic data (datasets, document contents, user input)
 - Per-request parameters that change every call
 
-#### Practical patterns from the course
-
-A well-structured system prompt typically layers four things:
+## A well-structured system prompt typically layers four things
 
 ```
 You are a [role].
@@ -66,10 +108,12 @@ You are an expert in [domain] and respond to [audience] in a [style] manner.
 </output_format>
 ```
 
+- Structured instructions wrapped in `<instructions>`, `<context>`, `<rules>` tags help Claude identify sections accurately
+- Affirmative phrasing like "Explain in prose paragraphs" is more reliable than negative phrasing like "don't use bullet points." 
 
-Structured instructions wrapped in `<instructions>`, `<context>`, `<rules>` tags help Claude identify sections accurately, and affirmative phrasing like "Explain in prose paragraphs" is more reliable than negative phrasing like "don't use bullet points." [Claude Lab](https://claudelab.net/en/articles/claude-ai/system-prompt-design)
+- [Claude Lab: System Prompt Design Guide](https://claudelab.net/en/articles/claude-ai/system-prompt-design)
 
-#### Important nuances
+## Important nuances
 
 1. **System prompts are not hidden from Claude.** They influence every response, but if a user asks Claude to reveal them, it might. Do not put secrets, API keys, or sensitive logic there.
 2. **API system prompts are yours alone.** The system prompts published for claude.ai and the iOS and Android apps do not apply to the Claude API. When you build on the API, you author the entire behavioral layer from scratch. 
@@ -77,8 +121,8 @@ Structured instructions wrapped in `<instructions>`, `<context>`, `<rules>` tags
 4. **Multi-turn context still requires resending.** The system prompt persists across a single API call, but Claude has no server-side memory between calls. Each request must include the full `messages` history plus the system prompt.
 
 
-#### System Prompts Are The Foundation
-
+## System Prompts Are The Foundation of
 - Tool definitions reference behaviors set up in the system prompt
 - Agentic workflows use it to scope each subagent's role
 - RAG implementations use it to constrain how retrieved context is handle
+

@@ -70,3 +70,6 @@ response = client.messages.create(
     ]
 )
 ```
+
+### Extracting the Response
+> The response object contains a lot of information, but you usually just want the generated text. `message.content[0].text`, to get a clean, readable output
