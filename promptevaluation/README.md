@@ -22,7 +22,7 @@
 
 
 
-## Prompt Evaluation
+## [Prompt Evaluation](./Notes/PromptEvaluation.md)
 
 > Automated testing to **measure** how well your prompts work it's about measuring their effectiveness through automated testing. You can:
 
