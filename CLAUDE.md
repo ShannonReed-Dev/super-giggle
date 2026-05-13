@@ -26,6 +26,8 @@ Each numbered file builds on the previous one. The `d1_` prefix means Day 1 exer
 | `004_system_prompting` | Passing a system prompt as an optional parameter |
 | `005_temperature` | Controlling response randomness with the `temperature` parameter |
 | `006_response_streaming` | Streaming responses: raw events, manual parsing, SDK simplified |
+| `007_structured_data` | Structured data output using assistant prefilling and stop sequences |
+| `008_structured_data` | Prefilling with multi-line strings to extract only raw CLI commands |
 | `d1_1_agentic_loop` | Agentic loop lifecycle with tool use (4-stage pattern) |
 
 ## Running Files
