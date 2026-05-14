@@ -1,3 +1,12 @@
+# Setting Up Your Environment
+
+> Before making any API calls, you need to install the required packages and configure your API key securely
+
+- Install Anthropic Python SDK : `pip install anthropic`
+- Install dontenv : `pip install python-dotenv`
+  - a library that allows your Python application to read key-value pairs from a `.env` file and set them as environment variables
+- Install both at the same time : `pip install anthropic python-dotenv`
+
 # Request anatomy
 
 > To send a request to Claude's API you must include 4 things API key, model name, messages, and max tokens
@@ -9,6 +18,7 @@
 
 - You should keep your API key inside a `.env` file inside your project folder
 - Use the `python-dotenv` library to load the key from the `.env` file into the environment in the background
+  - `pip install python-dotenv`
 
 > The Anthropic library has a "search" logic built into it. When you initialize the client without passing a key, it essentially does this:
 - Step A: Is there a key passed in the code? No.
