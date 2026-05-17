@@ -69,7 +69,7 @@ load_dotenv()# This is how anthropic gets the API key
 
 client = Anthropic()
 
-response = client.messages.create(
+res = client.messages.create(
     model="claude-opus-4-7",
     max_tokens=2048,
     messages=[
@@ -82,4 +82,16 @@ response = client.messages.create(
 ```
 
 ### Extracting the Response
-> The response object contains a lot of information, but you usually just want the generated text. `message.content[0].text`, to get a clean, readable output
+
+> The response object `res`contains a lot of information, something like:
+
+```python
+Message(id='msg_01GfgG3m4jLM6YLYHVR29gzE', container=None, content=[TextBlock(citations=None, text='Quantum computing is a type of computation that uses quantum bits (qubits) to process information in multiple states simultaneously, potentially solving certain problems much faster than classical computers.', type='text')], model='claude-haiku-4-5-20251001', role='assistant', stop_details=None, stop_reason='end_turn', stop_sequence=None, type='message', usage=Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, inference_geo='not_available', input_tokens=16, output_tokens=38, server_tool_use=None, service_tier='standard'))
+```
+
+
+> You usually just want the generated text. `res.content[0].text`, to get a clean, readable output:
+
+```python
+'Quantum computing is a type of computation that uses quantum bits (qubits) to process information in multiple states simultaneously, potentially solving certain problems much faster than classical computers.'
+```

@@ -52,5 +52,8 @@ message = client.messages.create(
     # this response object contains a lot of information, but you usually just want 
     # the generated text  which is message.content[0].text
 
+# print(message)
+
+
 # clean, readable output 
 print(message.content[0].text)
