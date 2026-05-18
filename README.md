@@ -7,6 +7,7 @@
 - Accessing the API
 - Getting an API key
 - Making a request
+- Conversation history
 - Multi-Turn conversations
 - Chat exercise
 - System prompts
@@ -18,7 +19,6 @@
 ---
 
 - [Making Anthropic API Request : Python](./python/README.md)
-- [Making Anthropic API Request : Typescript](./typescript/README.md)
 
 
 

@@ -2,6 +2,8 @@
 
 - [Making a Request](./001_requests.py)
     - [Request Notes](./Notes/Request.md)
+- [Conversation History](./002_conversation_history.py)
+    - [Conversation History Notes](./Notes/ConversationHistory.md)
 - [Multi-Turn Converstation](./002_multi-turn-conversations.py)
     - [Multi-Turn Converstation Notes](./Notes/MultiTurnConversations.md)
 - [Looping Chatbot Exercise](./003_looping_chatbot.py)

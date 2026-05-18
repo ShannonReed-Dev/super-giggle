@@ -1,9 +1,3 @@
-
-
-
-
-
-
 # Response Streaming
 
 > In a standard chat setup, your server sends a user message to Claude and waits for the complete response before sending anything back to the client. This creates an awkward delay where users have no feedback that anything is happening.
