@@ -10,14 +10,13 @@
 | Node.js | 18+ | `typescript/` examples |
 | Anthropic API key | from [console.anthropic.com](https://console.anthropic.com/) | both |
 
-### 2. Clone and add your API key
+### 2. Add your API key
 
 ```
-git clone <repo-url>
-cd super-giggle
+cd `python/`
 ```
 
-Create a `.env` file in **both** `python/` and `typescript/` (or one in the project root) containing:
+Create a `.env` file in `python/` or in the project root) containing:
 
 ```
 ANTHROPIC_API_KEY=your_key_here
